@@ -182,7 +182,6 @@ async function main() {
       categoryId: categoryMap["Electronics"],
     },
   ];
-
   for (const product of products) {
     await prisma.product.create({ data: product });
   }
