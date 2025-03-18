@@ -1,26 +1,53 @@
 @import "tailwindcss";
 
+/* Custom root variables */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #4f46e5; /* Indigo for buttons, accents */
+  --primary-hover: #4338ca;
+  --muted: #6b7280;
+  --card-bg: #f9fafb;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary: #818cf8;
+    --primary-hover: #a5b4fc;
+    --muted: #9ca3af;
+    --card-bg: #1f1f1f;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Base layer for global styles */
+@layer base {
+  body {
+    @apply bg-[var(--background)] text-[var(--foreground)] font-sans antialiased;
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+/* Component layer for reusable styles */
+@layer components {
+  .btn-primary {
+    @apply bg-[var(--primary)] text-white px-6 py-3 rounded-lg hover:bg-[var(--primary-hover)] transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-[var(--card-bg)] p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300;
+  }
+}
+
+/* Utility layer for small tweaks */
+@layer utilities {
+  .text-muted {
+    @apply text-[var(--muted)];
+  }
 }
