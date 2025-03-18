@@ -10,13 +10,20 @@
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "canvas-confetti": "^1.9.3",
     "framer-motion": "^12.5.0",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.483.0",
     "mysql2": "^3.13.0",
     "next": "15.2.3",
     "prisma": "^6.5.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-intersection-observer": "^9.16.0",
+    "sonner": "^2.0.1",
+    "swiper": "^11.2.5",
+    "tippy.js": "^6.3.7",
+    "yet-another-react-lightbox": "^3.21.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

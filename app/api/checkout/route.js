@@ -15,7 +15,11 @@ export async function POST(req) {
   }
 
   // Simulate order creation
-  const total = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const total = cart.items.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0
+  );
+
   await prisma.cart.update({
     where: { id: cart.id },
     data: { items: { deleteMany: {} } },

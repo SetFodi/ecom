@@ -1,25 +1,49 @@
+// app/products/ProductList.jsx
 "use client";
 
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShoppingCart, Eye, ZoomIn } from "lucide-react";
+import { ShoppingCart, Eye, ZoomIn, Heart, Search, Filter } from "lucide-react";
 import SafeImage from "./SafeImage";
+import { motion, AnimatePresence } from "framer-motion";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-  hover: { scale: 1.05, boxShadow: "0 15px 30px rgba(0, 0, 0, 0.1)" },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  hover: { y: -8, boxShadow: "0 15px 30px rgba(0, 0, 0, 0.1)" },
 };
 
-export default function ProductList({ products: initialProducts, categories }) {
+export default function ProductList({ products: initialProducts, categories, initialCategory }) {
   const [products] = useState(initialProducts);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || "All");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [modalProduct, setModalProduct] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [favorites, setFavorites] = useState([]);
   const productsPerPage = 8;
+
+  // Sync selectedCategory with initialCategory on mount
+  useEffect(() => {
+    setSelectedCategory(initialCategory || "All");
+  }, [initialCategory]);
+
+  // Load favorites from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedFavorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      setFavorites(storedFavorites);
+    }
+  }, []);
+
+  const toggleFavorite = (product) => {
+    const newFavorites = favorites.includes(product.id)
+      ? favorites.filter((id) => id !== product.id)
+      : [...favorites, product.id];
+    
+    setFavorites(newFavorites);
+    localStorage.setItem("favorites", JSON.stringify(newFavorites));
+  };
 
   const filteredProducts = products
     .filter((product) => selectedCategory === "All" || product.category.name === selectedCategory)
@@ -32,26 +56,61 @@ export default function ProductList({ products: initialProducts, categories }) {
     currentPage * productsPerPage
   );
 
+  const addToCart = (product) => {
+    if (product.stock <= 0) {
+      alert("Product is out of stock!");
+      return;
+    }
+    
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existing = cart.find((item) => item.id === product.id);
+    
+    if (existing) {
+      if (existing.quantity + 1 > product.stock) {
+        alert(`Only ${product.stock} items available in stock!`);
+        return;
+      }
+      existing.quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+    
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("storage"));
+    alert(`${product.name} added to cart!`);
+  };
+
   return (
     <div className="container-custom py-12">
-      <h1 className="text-4xl font-bold gradient-text mb-8 text-center">
+      <motion.h1 
+        className="text-5xl font-bold mb-8 text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         Explore Our Products
-      </h1>
+      </motion.h1>
 
-      <div className="mb-10 flex flex-col sm:flex-row gap-6 items-center justify-between bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl shadow-lg">
+      <motion.div 
+        className="mb-10 flex flex-col sm:flex-row gap-6 items-center justify-between bg-white p-6 rounded-xl shadow-lg border border-gray-100"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
         <div className="relative w-full sm:w-1/3">
           <input
             type="text"
             placeholder="Search products..."
-            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
+            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Eye className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
         </div>
-        <div className="flex gap-4">
+        
+        <div className="flex gap-4 w-full sm:w-auto">
           <select
-            className="p-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
+            className="p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
@@ -61,7 +120,7 @@ export default function ProductList({ products: initialProducts, categories }) {
             ))}
           </select>
           <select
-            className="p-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
+            className="p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >
@@ -69,45 +128,91 @@ export default function ProductList({ products: initialProducts, categories }) {
             <option value="price">Sort by Price</option>
           </select>
         </div>
+      </motion.div>
+
+      <div className="mb-8 flex flex-wrap gap-3 justify-center">
+        <button
+          onClick={() => setSelectedCategory("All")}
+          className={`category-pill ${selectedCategory === "All" ? "active" : ""}`}
+        >
+          All Products
+        </button>
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.name)}
+            className={`category-pill ${selectedCategory === cat.name ? "active" : ""}`}
+          >
+            {cat.name}
+          </button>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {paginatedProducts.length === 0 ? (
-          <p className="text-muted col-span-full text-center text-lg">
-            No products found. Try adjusting your filters!
-          </p>
+          <div className="col-span-full text-center py-16">
+            <div className="text-6xl mb-4">🔍</div>
+            <p className="text-xl text-gray-500 mb-6">No products found. Try adjusting your filters!</p>
+            <button
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedCategory("All");
+              }}
+              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Reset Filters
+            </button>
+          </div>
         ) : (
           paginatedProducts.map((product, index) => (
             <motion.div
               key={product.id}
-              className="product-card card relative bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all border border-gray-100"
+              className="product-card relative bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all border border-gray-100"
               variants={cardVariants}
               initial="hidden"
               animate="visible"
               whileHover="hover"
               transition={{ duration: 0.4, delay: index * 0.05 }}
             >
+              <div className="absolute top-3 right-3 z-10">
+                <button
+                  onClick={() => toggleFavorite(product)}
+                  className={`p-2 rounded-full ${
+                    favorites.includes(product.id)
+                      ? "bg-pink-500 text-white"
+                      : "bg-white/80 text-gray-400 hover:text-pink-500"
+                  }`}
+                >
+                  <Heart className="w-4 h-4" />
+                </button>
+              </div>
+
               {product.stock < 5 && product.stock > 0 && (
-                <span className="badge badge-sale">Low Stock</span>
+                <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full z-10">
+                  Only {product.stock} left
+                </span>
               )}
+              
               {product.stock === 0 && (
-                <span className="badge badge-featured">Out of Stock</span>
+                <span className="absolute top-3 left-3 bg-gray-500 text-white text-xs px-2 py-1 rounded-full z-10">
+                  Out of Stock
+                </span>
               )}
 
-              <div className="relative w-full h-64 bg-gray-100">
+              <div className="relative w-full h-64 bg-gray-100 overflow-hidden">
                 <SafeImage
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="product-img object-cover rounded-t-xl"
+                  className="object-cover transition-transform hover:scale-110 duration-500"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                 />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black bg-opacity-30 rounded-t-xl">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/30">
                   <button
-                    className="text-white p-3 rounded-full hover:bg-indigo-600 transition-all"
+                    className="p-2 rounded-full bg-white text-indigo-600 mx-1"
                     onClick={() => setModalProduct(product)}
                   >
-                    <ZoomIn className="w-6 h-6" />
+                    <ZoomIn className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -118,10 +223,17 @@ export default function ProductList({ products: initialProducts, categories }) {
                     {product.name}
                   </h3>
                 </Link>
-                <p className="text-muted text-sm mt-1">${product.price.toFixed(2)}</p>
+                
+                <div className="flex justify-between items-center mt-2">
+                  <p className="text-xl font-bold text-indigo-600">${product.price.toFixed(2)}</p>
+                  <span className="text-xs py-1 px-2 bg-indigo-50 text-indigo-700 rounded-full">
+                    {product.category.name}
+                  </span>
+                </div>
+                
                 <div className="mt-4 flex items-center justify-between gap-3">
                   <button
-                    className={`btn-primary flex items-center gap-2 flex-1 justify-center text-sm ${
+                    className={`flex items-center justify-center gap-2 flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg transition-colors ${
                       product.stock === 0 ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                     onClick={() => product.stock > 0 && addToCart(product)}
@@ -130,9 +242,10 @@ export default function ProductList({ products: initialProducts, categories }) {
                     <ShoppingCart className="w-4 h-4" />
                     Add to Cart
                   </button>
+                  
                   <Link
                     href={`/products/${product.id}`}
-                    className="btn-secondary flex items-center gap-2 flex-1 justify-center text-sm"
+                    className="flex items-center justify-center gap-2 flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded-lg transition-colors"
                   >
                     <Eye className="w-4 h-4" />
                     View
@@ -150,7 +263,7 @@ export default function ProductList({ products: initialProducts, categories }) {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
                 currentPage === page
                   ? "bg-indigo-600 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-indigo-100"
@@ -162,72 +275,117 @@ export default function ProductList({ products: initialProducts, categories }) {
         </div>
       )}
 
-      {modalProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+      <AnimatePresence>
+        {modalProduct && (
           <motion.div
-            className="card p-8 rounded-2xl max-w-md w-full bg-white shadow-2xl"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setModalProduct(null)}
           >
-            <h3 className="text-2xl font-bold gradient-text mb-4">{modalProduct.name}</h3>
-            <div className="relative w-full h-72">
-              <SafeImage
-                src={modalProduct.image}
-                alt={modalProduct.name}
-                fill
-                className="object-cover rounded-lg"
-              />
-            </div>
-            <p className="text-muted mt-4 mb-6 line-clamp-3">{modalProduct.description}</p>
-            <p className="text-xl font-semibold text-indigo-600 mb-6">
-              ${modalProduct.price.toFixed(2)}
-            </p>
-            <div className="flex gap-4">
-              <button
-                className={`btn-primary flex-1 flex items-center justify-center gap-2 ${
-                  modalProduct.stock === 0 ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => modalProduct.stock > 0 && addToCart(modalProduct)}
-                disabled={modalProduct.stock === 0}
-              >
-                <ShoppingCart className="w-4 h-4" />
-                Add to Cart
-              </button>
-              <Link
-                href={`/products/${modalProduct.id}`}
-                className="btn-secondary flex-1 flex items-center justify-center gap-2"
-                onClick={() => setModalProduct(null)}
-              >
-                <Eye className="w-4 h-4" />
-                View Details
-              </Link>
-            </div>
+            <motion.div
+              className="bg-white rounded-xl overflow-hidden max-w-xl w-full"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative h-64 bg-gray-100">
+                <SafeImage
+                  src={modalProduct.image}
+                  alt={modalProduct.name}
+                  fill
+                  className="object-cover"
+                />
+                {modalProduct.stock < 5 && modalProduct.stock > 0 && (
+                  <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                    Only {modalProduct.stock} left
+                  </span>
+                )}
+                {modalProduct.stock === 0 && (
+                  <span className="absolute top-3 left-3 bg-gray-500 text-white text-xs px-2 py-1 rounded-full">
+                    Out of Stock
+                  </span>
+                )}
+                <button
+                  className="absolute top-3 right-3 p-2 rounded-full bg-white/80 text-gray-700"
+                  onClick={() => setModalProduct(null)}
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="p-6">
+                <span className="inline-block px-2 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs mb-3">
+                  {modalProduct.category.name}
+                </span>
+                <h3 className="text-2xl font-bold mb-2">{modalProduct.name}</h3>
+                <p className="text-gray-600 mb-6 line-clamp-3">
+                  {modalProduct.description || "This premium product is designed with quality materials to provide the best experience."}
+                </p>
+                <div className="flex justify-between items-center mb-6">
+                  <p className="text-2xl font-bold text-indigo-600">
+                    ${modalProduct.price.toFixed(2)}
+                  </p>
+                  <span className="text-sm text-gray-500">
+                    {modalProduct.stock > 0 ? `${modalProduct.stock} in stock` : "Out of stock"}
+                  </span>
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    className={`flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition-colors ${
+                      modalProduct.stock === 0 ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    onClick={() => modalProduct.stock > 0 && addToCart(modalProduct)}
+                    disabled={modalProduct.stock === 0}
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    Add to Cart
+                  </button>
+                  <Link
+                    href={`/products/${modalProduct.id}`}
+                    className="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-lg transition-colors"
+                    onClick={() => setModalProduct(null)}
+                  >
+                    <Eye className="w-4 h-4" />
+                    View Details
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
+
+      <style jsx global>{`
+        .container-custom {
+          max-width: 1440px;
+          margin: 0 auto;
+          padding: 0 1.5rem;
+        }
+        
+        .category-pill {
+          background: white;
+          color: #4F46E5;
+          border: 1px solid rgba(79, 70, 229, 0.2);
+          padding: 0.5rem 1.25rem;
+          border-radius: 9999px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+        }
+        
+        .category-pill:hover {
+          box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+          transform: translateY(-2px);
+        }
+        
+        .category-pill.active {
+          background: linear-gradient(to right, #4F46E5, #7C3AED);
+          color: white;
+          border-color: transparent;
+        }
+      `}</style>
     </div>
   );
-}
-
-function addToCart(product) {
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-  const existing = cart.find((item) => item.id === product.id);
-  if (existing) {
-    if (existing.quantity + 1 > product.stock) {
-      alert(`Only ${product.stock} items available in stock!`);
-      return;
-    }
-    existing.quantity += 1;
-  } else {
-    if (product.stock < 1) {
-      alert("Out of stock!");
-      return;
-    }
-    cart.push({ ...product, quantity: 1 });
-  }
-  localStorage.setItem("cart", JSON.stringify(cart));
-  window.dispatchEvent(new Event("storage"));
-  alert(`${product.name} added to cart!`);
 }

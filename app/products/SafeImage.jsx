@@ -1,22 +1,39 @@
+// app/products/SafeImage.jsx
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import { useState } from "react";
 
-const SafeImage = ({ src, alt, ...props }) => {
-  const [hasError, setHasError] = useState(false);
+export default function SafeImage(props) {
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Default fallback image if src fails to load
+  const fallbackSrc = "https://images.unsplash.com/photo-1545239351-ef35f43d514b?q=80&w=1000";
 
   return (
-    <Image
-      src={hasError ? "/placeholder-image.jpg" : src}
-      alt={alt}
-      onError={() => setHasError(true)}
-      onLoadingComplete={(img) => {
-        if (img.naturalWidth === 0) setHasError(true);
-      }}
-      {...props}
-    />
+    <>
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
+          <svg
+            className="w-10 h-10 text-gray-200"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 20 18"
+          >
+            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+          </svg>
+        </div>
+      )}
+      
+      <Image
+        {...props}
+        src={isError ? fallbackSrc : props.src}
+        onError={() => setIsError(true)}
+        onLoad={() => setIsLoading(false)}
+        className={`${props.className || ""} ${isLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}
+      />
+    </>
   );
-};
-
-export default SafeImage;
+}
