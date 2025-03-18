@@ -1,30 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShoppingBag, Search, ShoppingCart, User, Menu, X } from "lucide-react";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const updateCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
+    };
+    updateCartCount();
+    window.addEventListener("storage", updateCartCount);
+    return () => window.removeEventListener("storage", updateCartCount);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
       <div className="max-w-7xl mx-auto">
-        {/* Announcement bar */}
         <div className="bg-indigo-600 text-white text-center text-sm py-2 px-4">
           Free shipping on all orders over $50 | 30-day money-back guarantee
         </div>
-
-        {/* Main header */}
         <div className="px-4 py-4 md:py-6 flex flex-wrap items-center justify-between">
-          {/* Logo */}
           <a href="/" className="flex items-center space-x-2">
             <ShoppingBag className="w-8 h-8 text-indigo-600" />
             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
               ShopifyLite
             </span>
           </a>
-
-          {/* Search */}
           <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
             <div className="relative w-full">
               <input
@@ -37,8 +42,6 @@ export default function Header() {
               </button>
             </div>
           </div>
-
-          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
             <a href="/" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Home</a>
             <a href="/products" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Products</a>
@@ -51,21 +54,17 @@ export default function Header() {
               <a href="/cart" className="text-gray-600 hover:text-indigo-600 transition-colors p-2 relative">
                 <ShoppingCart className="w-6 h-6" />
                 <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  0
+                  {cartCount}
                 </span>
               </a>
             </div>
           </nav>
-
-          {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-600 p-2">
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
-
-        {/* Mobile Menu */}
         {isMenuOpen && (
           <nav className="md:hidden bg-white px-4 py-4 border-t border-gray-200">
             <div className="space-y-4">
@@ -80,7 +79,7 @@ export default function Header() {
                 <a href="/cart" className="text-gray-600 hover:text-indigo-600 transition-colors p-2 relative">
                   <ShoppingCart className="w-6 h-6" />
                   <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    0
+                    {cartCount}
                   </span>
                 </a>
               </div>
