@@ -14,10 +14,6 @@ async function main() {
     { name: "Clothing" },
     { name: "Accessories" },
     { name: "Electronics" },
-    { name: "Jewelry" },
-    { name: "Bags" },
-    { name: "Home Decor" },
-    { name: "Sports" },
   ];
 
   const createdCategories = [];
@@ -31,246 +27,110 @@ async function main() {
     return map;
   }, {});
 
-  // Seed Products with Valid Unsplash Images
+  // Seed Products with verified working Unsplash URLs
   const products = [
     // Footwear
     {
-      name: "Leather Sneakers",
-      description: "Stylish and durable leather sneakers for everyday wear.",
+      name: "Red Nike Air Max",
+      description: "Bold red athletic sneakers with visible air cushioning.",
+      price: 129.99,
+      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1470", 
+      stock: 12,
+      categoryId: categoryMap["Footwear"],
+    },
+    {
+      name: "White Minimalist Sneakers",
+      description: "Clean, all-white leather sneakers for everyday style.",
       price: 89.99,
-      image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=800",
+      image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=1469", 
       stock: 15,
-      categoryId: categoryMap["Footwear"],
-    },
-    {
-      name: "Running Shoes",
-      description: "Lightweight shoes for running enthusiasts.",
-      price: 65.99,
-      image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=800",
-      stock: 20,
-      categoryId: categoryMap["Footwear"],
-    },
-    {
-      name: "Canvas Sneakers",
-      description: "Casual canvas sneakers with rubber soles.",
-      price: 39.99,
-      image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800",
-      stock: 25,
       categoryId: categoryMap["Footwear"],
     },
     {
       name: "Hiking Boots",
-      description: "Rugged boots designed for hiking trails.",
-      price: 89.99,
-      image: "https://images.unsplash.com/photo-1545334279-7c7b2d3e4b83?q=80&w=800",
-      stock: 12,
+      description: "Rugged outdoor boots for trail adventures.",
+      price: 149.99,
+      image: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?q=80&w=1470", 
+      stock: 10,
       categoryId: categoryMap["Footwear"],
     },
-
+    
     // Clothing
     {
-      name: "Organic Cotton T-Shirt",
-      description: "Comfortable and eco-friendly cotton tee.",
-      price: 24.99,
-      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800",
-      stock: 25,
-      categoryId: categoryMap["Clothing"],
-    },
-    {
       name: "Denim Jacket",
-      description: "Classic denim jacket with a modern fit.",
-      price: 59.99,
-      image: "https://images.unsplash.com/photo-1551537482-7cb7b327aecf?q=80&w=800",
+      description: "Classic denim jacket with button front closure.",
+      price: 79.99,
+      image: "https://images.unsplash.com/photo-1551537482-f2c3c8bed602?q=80&w=1470", 
       stock: 15,
       categoryId: categoryMap["Clothing"],
     },
     {
-      name: "Wool Sweater",
-      description: "Cozy wool sweater for cold weather.",
-      price: 45.99,
-      image: "https://images.unsplash.com/photo-1605487903301-9a72a3e5955f?q=80&w=800",
-      stock: 12,
+      name: "White Graphic T-Shirt",
+      description: "Cotton t-shirt with minimalist design.",
+      price: 24.99,
+      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1480", 
+      stock: 25,
       categoryId: categoryMap["Clothing"],
     },
     {
       name: "Hoodie",
-      description: "Soft and warm hoodie for casual wear.",
-      price: 49.99,
-      image: "https://images.unsplash.com/photo-1571945153237-7b6b25661c99?q=80&w=800",
+      description: "Comfortable cotton-blend pullover hoodie.",
+      price: 54.99,
+      image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=1527", 
       stock: 20,
       categoryId: categoryMap["Clothing"],
     },
-
+    
     // Accessories
     {
-      name: "Silk Scarf",
-      description: "Elegant silk scarf with vibrant patterns.",
+      name: "Patterned Scarf",
+      description: "Stylish scarf with colorful designs.",
       price: 34.99,
-      image: "https://images.unsplash.com/photo-1604537529428-15bcbeecfe4d?q=80&w=800",
+      image: "https://images.unsplash.com/photo-1604537529428-15bcbeecfe4d?q=80&w=1469", 
       stock: 10,
       categoryId: categoryMap["Accessories"],
     },
     {
-      name: "Leather Belt",
-      description: "Premium leather belt with a sleek buckle.",
-      price: 29.99,
-      image: "https://images.unsplash.com/photo-1593410871656-68d0b7a1a2f3?q=80&w=800",
+      name: "Leather Wallet",
+      description: "Classic bi-fold leather wallet.",
+      price: 49.99,
+      image: "https://images.unsplash.com/photo-1627123424574-724758594e93?q=80&w=1374", 
       stock: 30,
       categoryId: categoryMap["Accessories"],
     },
     {
-      name: "Sunglasses",
-      description: "Stylish sunglasses with UV protection.",
-      price: 25.99,
-      image: "https://images.unsplash.com/photo-1502764613149-7f1d229e230d?q=80&w=800",
-      stock: 20,
+      name: "Aviator Sunglasses",
+      description: "Metal frame aviator sunglasses with gradient lenses.",
+      price: 99.99,
+      image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=1480", 
+      stock: 15,
       categoryId: categoryMap["Accessories"],
     },
-    {
-      name: "Summer Hat",
-      description: "Lightweight hat for sun protection.",
-      price: 19.99,
-      image: "https://images.unsplash.com/photo-1506059858951-9d0d47b729a1?q=80&w=800",
-      stock: 30,
-      categoryId: categoryMap["Accessories"],
-    },
-
+    
     // Electronics
     {
-      name: "Smartwatch Pro",
-      description: "Advanced fitness and notification smartwatch.",
-      price: 149.99,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800",
-      stock: 8,
-      categoryId: categoryMap["Electronics"],
-    },
-    {
-      name: "Wireless Earbuds",
-      description: "High-quality noise-canceling earbuds.",
-      price: 79.99,
-      image: "https://images.unsplash.com/photo-1572569511254-1e9e96f679b0?q=80&w=800",
+      name: "Smart Watch",
+      description: "Modern smartwatch with health monitoring features.",
+      price: 219.99,
+      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1399", 
       stock: 12,
       categoryId: categoryMap["Electronics"],
     },
     {
-      name: "Bluetooth Speaker",
-      description: "Portable speaker with rich sound quality.",
-      price: 49.99,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800",
-      stock: 18,
+      name: "Over-Ear Headphones",
+      description: "Premium over-ear headphones with noise cancellation.",
+      price: 249.99,
+      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1470", 
+      stock: 10,
       categoryId: categoryMap["Electronics"],
     },
     {
-      name: "Wireless Mouse",
-      description: "Ergonomic wireless mouse for productivity.",
-      price: 29.99,
-      image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?q=80&w=800",
-      stock: 25,
+      name: "Portable Speaker",
+      description: "Compact wireless Bluetooth speaker.",
+      price: 89.99,
+      image: "https://images.unsplash.com/photo-1589003077984-894e133dabab?q=80&w=1374", 
+      stock: 16,
       categoryId: categoryMap["Electronics"],
-    },
-
-    // Jewelry
-    {
-      name: "Silver Necklace",
-      description: "Delicate silver necklace with a pendant.",
-      price: 59.99,
-      image: "https://images.unsplash.com/photo-1605487903301-9a72a3e5955f?q=80&w=800",
-      stock: 15,
-      categoryId: categoryMap["Jewelry"],
-    },
-    {
-      name: "Gold Earrings",
-      description: "Elegant gold hoop earrings.",
-      price: 79.99,
-      image: "https://images.unsplash.com/photo-1605487903301-9a72a3e5955f?q=80&w=800",
-      stock: 10,
-      categoryId: categoryMap["Jewelry"],
-    },
-    {
-      name: "Bracelet Set",
-      description: "Set of three minimalist bracelets.",
-      price: 29.99,
-      image: "https://images.unsplash.com/photo-1605487903301-9a72a3e5955f?q=80&w=800",
-      stock: 20,
-      categoryId: categoryMap["Jewelry"],
-    },
-
-    // Bags
-    {
-      name: "Backpack",
-      description: "Durable backpack for daily use.",
-      price: 54.99,
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=800",
-      stock: 20,
-      categoryId: categoryMap["Bags"],
-    },
-    {
-      name: "Tote Bag",
-      description: "Stylish tote bag for shopping or work.",
-      price: 39.99,
-      image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800",
-      stock: 15,
-      categoryId: categoryMap["Bags"],
-    },
-    {
-      name: "Crossbody Bag",
-      description: "Compact crossbody bag for essentials.",
-      price: 29.99,
-      image: "https://images.unsplash.com/photo-1598532213897-2e0e463252c6?q=80&w=800",
-      stock: 25,
-      categoryId: categoryMap["Bags"],
-    },
-
-    // Home Decor
-    {
-      name: "Ceramic Vase",
-      description: "Handcrafted ceramic vase for home decor.",
-      price: 34.99,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800",
-      stock: 15,
-      categoryId: categoryMap["Home Decor"],
-    },
-    {
-      name: "Wall Art Print",
-      description: "Abstract wall art print for modern spaces.",
-      price: 49.99,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800",
-      stock: 20,
-      categoryId: categoryMap["Home Decor"],
-    },
-    {
-      name: "Throw Pillow",
-      description: "Soft throw pillow with geometric patterns.",
-      price: 19.99,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800",
-      stock: 30,
-      categoryId: categoryMap["Home Decor"],
-    },
-
-    // Sports
-    {
-      name: "Yoga Mat",
-      description: "Non-slip yoga mat for daily practice.",
-      price: 24.99,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800",
-      stock: 25,
-      categoryId: categoryMap["Sports"],
-    },
-    {
-      name: "Dumbbell Set",
-      description: "Adjustable dumbbell set for home workouts.",
-      price: 79.99,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800",
-      stock: 10,
-      categoryId: categoryMap["Sports"],
-    },
-    {
-      name: "Sports Water Bottle",
-      description: "Insulated water bottle for outdoor activities.",
-      price: 19.99,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800",
-      stock: 30,
-      categoryId: categoryMap["Sports"],
     },
   ];
 
@@ -278,7 +138,7 @@ async function main() {
     await prisma.product.create({ data: product });
   }
 
-  console.log("Seeding completed successfully!");
+  console.log("Seeding completed successfully with verified working image URLs!");
 }
 
 main()

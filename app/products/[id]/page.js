@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import AddToCartButton from "./AddToCartButton";
-import SafeImage from "./SafeImage"; // Import the new Client Component
+import SafeImage from "./SafeImage";
 
 const prisma = new PrismaClient();
 
@@ -15,7 +14,6 @@ async function getProduct(id) {
 }
 
 export default async function ProductPage({ params }) {
-  // Await params to resolve the dynamic route parameter
   const resolvedParams = await params;
   const product = await getProduct(resolvedParams.id);
 

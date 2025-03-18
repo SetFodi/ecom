@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
 import { ShoppingCart, Eye, ZoomIn } from "lucide-react";
-import SafeImage from "./SafeImage"; // Import the shared SafeImage component
+import SafeImage from "./SafeImage";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },

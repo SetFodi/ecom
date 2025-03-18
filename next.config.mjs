@@ -1,6 +1,13 @@
+// next.config.mjs
 const nextConfig = {
     images: {
-      domains: ["images.unsplash.com"], // Add domains for external images
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'images.unsplash.com',
+          pathname: '/**',
+        },
+      ],
     },
   };
   
