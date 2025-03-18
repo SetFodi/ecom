@@ -1,10 +1,11 @@
-"use client";
 // app/products/[id]/page.js
 import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
 import AddToCartButton from "./AddToCartButton";
-import SafeImage from "../SafeImage";
+import ProductImageGallery from "./ProductImageGallery";
 import { Tag, Truck, RotateCcw, Award } from "lucide-react";
+import SafeImage from "../SafeImage";
+import ProductPageLayout from "./ProductPageLayout";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,9 @@ async function getProduct(id) {
     where: { id: Number(id) },
     include: { category: true },
   });
-  
+  if (!product) {
+    throw new Error(`Product with id ${id} not found`);
+  }
   return product;
 }
 
@@ -38,61 +41,30 @@ export default async function ProductPage({ params }) {
 
   const relatedProducts = await getRelatedProducts(product.categoryId, resolvedParams.id);
 
-  // Generate additional product images for gallery
-  const productImages = [
-    product.image,
-    // Add your placeholder images here
-    "/product-placeholder-1.jpg",
-    "/product-placeholder-2.jpg"
-  ];
-
   return (
-    <div className="container-custom py-12">
+    <ProductPageLayout>
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
           <div className="relative">
-            <div className="relative h-[500px] bg-gray-50">
-              <SafeImage
-                src={product.image}
-                alt={product.name}
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority
-              />
-              
-              <div className="absolute top-4 left-4 z-10">
-                {product.stock < 5 && product.stock > 0 && (
-                  <span className="bg-red-500 text-white text-xs px-3 py-1 rounded-full">
-                    Only {product.stock} left
-                  </span>
-                )}
-                {product.stock === 0 && (
-                  <span className="bg-gray-500 text-white text-xs px-3 py-1 rounded-full">
-                    Out of Stock
-                  </span>
-                )}
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-2 p-4 bg-white border-t border-gray-100">
-              {productImages.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-indigo-500 transition-all cursor-pointer"
-                >
-                  <SafeImage
-                    src={image}
-                    alt={`${product.name} thumbnail ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="100px"
-                  />
-                </div>
-              ))}
+            <ProductImageGallery 
+              images={[product.image]} 
+              productName={product.name} 
+            />
+
+            <div className="absolute top-4 left-4 z-10">
+              {product.stock < 5 && product.stock > 0 && (
+                <span className="bg-red-500 text-white text-xs px-3 py-1 rounded-full">
+                  Only {product.stock} left
+                </span>
+              )}
+              {product.stock === 0 && (
+                <span className="bg-gray-500 text-white text-xs px-3 py-1 rounded-full">
+                  Out of Stock
+                </span>
+              )}
             </div>
           </div>
-          
+
           <div className="p-8 lg:p-12 flex flex-col h-full">
             <div>
               <div className="flex flex-col mb-3">
@@ -103,13 +75,13 @@ export default async function ProductPage({ params }) {
                   {product.name}
                 </h1>
               </div>
-              
+
               <p className="text-gray-600 mb-8">
-                {product.description || 
+                {product.description ||
                   "This premium product combines elegant design with exceptional functionality. Crafted with high-quality materials and attention to detail."}
               </p>
             </div>
-            
+
             <div className="mb-8">
               <div className="flex flex-wrap gap-4 mb-6">
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-50">
@@ -125,7 +97,7 @@ export default async function ProductPage({ params }) {
                   <span className="text-sm">30-Day Returns</span>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between mb-6">
                 <p className="text-3xl font-bold text-indigo-600">
                   ${product.price.toFixed(2)}
@@ -136,10 +108,10 @@ export default async function ProductPage({ params }) {
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-6 mt-auto">
               <AddToCartButton product={product} />
-              
+
               <p className="text-sm text-center text-gray-500">
                 Free shipping on orders over $50
               </p>
@@ -157,7 +129,7 @@ export default async function ProductPage({ params }) {
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
           </div>
-          
+
           <div className="bg-white rounded-xl shadow-sm overflow-hidden p-6 border border-gray-100">
             <h3 className="text-lg font-semibold mb-4">Features</h3>
             <ul className="space-y-2 text-gray-600">
@@ -179,7 +151,7 @@ export default async function ProductPage({ params }) {
               </li>
             </ul>
           </div>
-          
+
           <div className="bg-white rounded-xl shadow-sm overflow-hidden p-6 border border-gray-100">
             <h3 className="text-lg font-semibold mb-4">Specifications</h3>
             <div className="space-y-3 text-gray-600">
@@ -212,8 +184,8 @@ export default async function ProductPage({ params }) {
           <h2 className="text-2xl font-bold mb-8">You Might Also Like</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedProducts.map((related) => (
-              <a 
-                key={related.id} 
+              <a
+                key={related.id}
                 href={`/products/${related.id}`}
                 className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100"
               >
@@ -243,14 +215,6 @@ export default async function ProductPage({ params }) {
           </div>
         </div>
       )}
-
-      <style jsx global>{`
-        .container-custom {
-          max-width: 1440px;
-          margin: 0 auto;
-          padding: 0 1.5rem;
-        }
-      `}</style>
-    </div>
+    </ProductPageLayout>
   );
 }

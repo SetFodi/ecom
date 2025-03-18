@@ -18,8 +18,9 @@ async function getCategories() {
 }
 
 export default async function Products({ searchParams }) {
-  const selectedCategory = searchParams.category || null;
-  
+  const resolvedSearchParams = await searchParams; // Await searchParams
+  const selectedCategory = resolvedSearchParams.category || null;
+
   return (
     <Suspense
       fallback={
