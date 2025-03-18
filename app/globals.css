@@ -51,3 +51,14 @@
     @apply text-[var(--muted)];
   }
 }
+
+.btn-primary {
+  @apply bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-all;
+}
+.btn-secondary {
+  @apply bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-all;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600;
+}

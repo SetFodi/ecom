@@ -1,3 +1,4 @@
+// app/products/page.js
 import { PrismaClient } from "@prisma/client";
 import ProductList from "./ProductList";
 import { Suspense } from "react";
