@@ -1,3 +1,4 @@
+// app/layout.js
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./Header"; // New client component for header
@@ -17,56 +18,50 @@ export default function RootLayout({ children }) {
         <main className="max-w-7xl mx-auto py-8 px-4 min-h-[calc(100vh-300px)]">
           {children}
         </main>
-        <footer className="bg-gray-900 text-white">
-          <div className="max-w-7xl mx-auto px-4 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div>
-                <h3 className="text-xl font-bold mb-4">ShopifyLite</h3>
-                <p className="text-gray-400 mb-4">
-                  Premium shopping experience with the best products curated just for you.
-                </p>
-                {/* Social icons remain the same */}
-              </div>
-              <div>
-                <h4 className="text-lg font-bold mb-4">Shop</h4>
-                <ul className="space-y-2">
-                  <li><a href="/products" className="text-gray-400 hover:text-white transition-colors">All Products</a></li>
-                  <li><a href="/collections" className="text-gray-400 hover:text-white transition-colors">Collections</a></li>
-                  <li><a href="/featured" className="text-gray-400 hover:text-white transition-colors">Featured</a></li>
-                  <li><a href="/sale" className="text-gray-400 hover:text-white transition-colors">Sale</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-lg font-bold mb-4">Customer Service</h4>
-                <ul className="space-y-2">
-                  <li><a href="/contact" className="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
-                  <li><a href="/faq" className="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
-                  <li><a href="/shipping" className="text-gray-400 hover:text-white transition-colors">Shipping & Returns</a></li>
-                  <li><a href="/warranty" className="text-gray-400 hover:text-white transition-colors">Warranty</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-lg font-bold mb-4">Subscribe</h4>
-                <p className="text-gray-400 mb-4">Sign up for our newsletter.</p>
-                <form className="flex">
-                  <input
-                    type="email"
-                    placeholder="Your email"
-                    className="flex-grow px-4 py-2 rounded-l-lg focus:outline-none"
-                  />
-                  <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-r-lg transition-colors">
-                    Subscribe
-                  </button>
-                </form>
-              </div>
+        <footer className="bg-gray-900 text-white py-6">
+          <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in">
+            {/* Left: Logo and Copyright */}
+            <div className="flex items-center space-x-3">
+              <h3 className="text-lg font-bold text-white hover:text-indigo-400 transition-colors duration-300">
+                ShopifyLite
+              </h3>
+              <p className="text-gray-400 text-sm">
+                © 2025 ShopifyLite. All rights reserved.
+              </p>
             </div>
-            <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-              <p className="text-gray-400 text-sm">© 2025 ShopifyLite. All rights reserved.</p>
-              <div className="mt-4 md:mt-0 flex space-x-4 text-sm">
-                <a href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
-                <a href="/terms" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
-                <a href="/sitemap" className="text-gray-400 hover:text-white transition-colors">Sitemap</a>
-              </div>
+
+            {/* Center: Links */}
+            <div className="flex space-x-6 text-sm">
+              {[
+                { href: "/privacy", label: "Privacy Policy" },
+                { href: "/terms", label: "Terms of Service" },
+                { href: "/sitemap", label: "Sitemap" },
+              ].map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-gray-400 hover:text-indigo-400 hover:scale-105 transform transition-all duration-300 relative group"
+                >
+                  {link.label}
+                  <span className="absolute left-0 bottom-0 w-0 h-[1px] bg-indigo-400 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+              ))}
+            </div>
+
+            {/* Right: Social Icons */}
+            <div className="flex space-x-4">
+              {["facebook", "twitter", "instagram"].map((social) => (
+                <a
+                  key={social}
+                  href={`https://${social}.com`}
+                  className="text-gray-400 hover:text-indigo-400 hover:scale-110 transform transition-all duration-300"
+                >
+                  <span className="sr-only">{social}</span>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
+                  </svg>
+                </a>
+              ))}
             </div>
           </div>
         </footer>
