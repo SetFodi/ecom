@@ -9,7 +9,9 @@
   --muted: #6b7280;
   --card-bg: #f9fafb;
 }
-
+html{
+  scroll-behavior: smooth;
+}
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
