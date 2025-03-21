@@ -14,7 +14,7 @@ export default function FeaturedProductsCarousel({ products }) {
 
   useEffect(() => {
     if (scrollContainerRef.current) {
-      const cardWidth = 300; // Adjust based on card width
+      const cardWidth = 300; 
       const scrollPosition = currentIndex * cardWidth;
       scrollContainerRef.current.scrollTo({
         left: scrollPosition,
