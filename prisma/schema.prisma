@@ -1,8 +1,6 @@
-
 generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -11,22 +9,27 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String // In production, hash this!
+  name      String?  // Add name field
+  password  String   // In production, hash this!
   carts     Cart[]
+  orders    Order[]  // Relation to orders
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // Add updatedAt field
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
   description String
   price       Float
   image       String
-  stock       Int      @default(10)
+  extraImages String?    // JSON string array for additional images
+  stock       Int        @default(10)
   categoryId  Int
-  category    Category @relation(fields: [categoryId], references: [id])
+  category    Category   @relation(fields: [categoryId], references: [id])
   cartItems   CartItem[]
-  createdAt   DateTime @default(now())
+  orderItems  OrderItem[] // Relation to order items
+  createdAt   DateTime   @default(now())
 }
 
 model Category {
@@ -51,4 +54,31 @@ model CartItem {
   quantity  Int      @default(1)
   cart      Cart     @relation(fields: [cartId], references: [id])
   product   Product  @relation(fields: [productId], references: [id])
+}
+
+// New models for orders
+model Order {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+  total       Float
+  status      String      @default("processing") // processing, shipped, delivered, cancelled
+  address     String
+  city        String
+  postalCode  String
+  country     String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  name      String   // Store name at time of purchase
+  price     Float    // Store price at time of purchase
+  quantity  Int
 }
