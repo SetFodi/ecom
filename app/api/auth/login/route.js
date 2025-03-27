@@ -49,8 +49,8 @@ export async function POST(request) {
       { expiresIn: "7d" }
     );
 
-    // Set cookie
-    cookies().set({
+    const cookieStore = await cookies();
+    cookieStore.set({
       name: "auth_token",
       value: token,
       httpOnly: true,
@@ -59,7 +59,6 @@ export async function POST(request) {
       path: "/",
     });
 
-    // Return user data (excluding password)
     const { password: _, ...userData } = user;
     return NextResponse.json(userData);
   } catch (error) {
